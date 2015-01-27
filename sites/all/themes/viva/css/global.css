@@ -1,0 +1,376 @@
+/* This file will hold styles for the mobile version of your website (mobile first). */
+/* This also can include ANY global CSS that applies site-wide. Unless overwritten by a more specific style rule, CSS declarations in global.css will apply site-wide. */
+
+
+
+/* utility menu styles */
+#zone-user
+{
+width:700px;
+float: right;
+height: 20px;
+margin-top:10px;
+}
+	
+#zone-user .clearfix {clear:none;}
+
+
+#region-user-first {float:right; height:10px;}
+
+#block-menu-menu-utility-navigation {
+background-color:#727272;
+padding:0.4em;
+}
+
+#block-menu-menu-utility-navigation ul li {
+float:left;
+padding-right:1em;
+background-image: none;
+}
+
+#block-menu-menu-utility-navigation ul li.leaf {
+list-style-image:none;
+list-style: none; 
+border-right:solid 1px #ffffff;
+}
+
+#block-menu-menu-utility-navigation ul li.last {
+border-right:none;
+}
+#block-menu-menu-utility-navigation ul li.leaf a{
+color:#ffffff; 
+text-decoration:none;
+}
+
+#block-menu-menu-utility-navigation ul li.leaf a .active{
+color:#CCCCCC;
+}
+
+/* search block */
+
+#region-user-second {float:right;}
+
+.form-item-search-block-form .form-text {
+background-image: url("images/mag-glass.gif");
+background-repeat: no-repeat;
+background-position: 3px 3px;
+height:30px;
+border: 1px solid #000000;
+padding-left: 30px;
+width: 220px;
+}
+
+
+/* extra button code */
+
+#block-search-form button, input[type="reset"], input[type="submit"], input[type="button"] {
+    -moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    background: -moz-linear-gradient(center top , #FFFFFF 0%, #DDDDDD 100%) repeat scroll 0 0 transparent;
+    border-color: #CCCCCC #999999 #666666;
+    border-image: none;
+    border-radius: 0 11px 11px 0;
+    border-width: 1px;
+    color: #333333;
+    cursor: pointer;
+    font: bold 12px/1.2 Arial,sans-serif;
+    outline: 0 none;
+    overflow: visible;
+    padding: 0.5em;
+    text-shadow: 0 0 1px #FFFFFF;
+    width: 73px;
+	margin-right:0px;
+}
+
+
+.search-block-form #form-submit {
+	
+	background-color:#cc0000;}
+
+
+/*top menu */
+
+#zone-menu
+{
+	float: left;
+	width: 650px;
+}
+
+.region-menu-inner
+{
+float:left;
+}
+.navigation
+{
+float:left;
+}
+
+.region-menu
+{
+float:left;
+}
+
+
+
+
+
+/*top menu blocks */
+	
+
+/*menu item 1 */
+#topmenu1 a
+{
+color:#121212;
+/*background: #fa7d3b; /* for non-css3 browsers */
+/*filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fc7d3a', endColorstr='#fa620f'); /* for IE */
+/*background: -webkit-gradient(linear, left top, left bottom, from(#fc7d3a), to(#fa620f)); /* for webkit browsers */
+/*background: -moz-linear-gradient(top,  #fc7d3a,  #fa620f); /* for firefox 3.6+ */
+float:left;
+/*border-top:1px solid #fc7d3a;
+border-right:1px solid #fc7d3a;
+border-left:1px solid #fc7d3a;
+border-radius:7px;
+border-bottom-left-radius:0px;
+border-bottom-right-radius:0px;
+-moz-border-radius:7px;
+/* Firefox 3.6 and earlier */
+    height: 60px;
+    margin-right: 5px;
+    padding-left: 10px;
+    padding-right: 5px;
+    padding-top: 10px;
+    width: 110px;
+	text-decoration:none;
+}
+
+#topmenu1 h2 {}
+
+
+#topmenu1 a:hover
+{
+	text-decoration:underline;
+}
+
+/*menu item 2 */
+#topmenu2 a
+{
+color:#121212;
+/*background: #6fca3f; /* for non-css3 browsers */
+/*filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#6fca3f', endColorstr='#4bb706'); /* for IE */
+/*background: -webkit-gradient(linear, left top, left bottom, from(#6fca3f), to(#4bb706)); /* for webkit browsers */
+/*background: -moz-linear-gradient(top,  #6fca3f,  #4bb706); /* for firefox 3.6+ */
+float:left;
+/*border-top:1px solid #6fca3f;
+border-right:1px solid #6fca3f;
+border-left:1px solid #6fca3f;
+border-radius:7px;
+border-bottom-left-radius:0px;
+border-bottom-right-radius:0px;
+-moz-border-radius:7px; /* Firefox 3.6 and earlier */
+    height: 60px;
+    margin-right: 5px;
+    padding-left: 10px;
+    padding-right: 5px;
+    padding-top: 10px;
+    width: 110px;
+	text-decoration:none;
+}
+
+#topmenu2 a:hover
+{
+	text-decoration:underline;
+}
+
+/*menu item 3 */
+#topmenu3 a
+{
+color:#121212;
+/*background: #fecd04; /* for non-css3 browsers */
+/*filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fecd04', endColorstr='#f7b53a'); /* for IE */
+/*background: -webkit-gradient(linear, left top, left bottom, from(#fecd04), to(#f7b53a)); /* for webkit browsers */
+/*background: -moz-linear-gradient(top,  #fecd04,  #f7b53a); /* for firefox 3.6+ */
+float:left;
+/*border-top:1px solid #fecd04;
+border-right:1px solid #fecd04;
+border-left:1px solid #fecd04;
+border-radius:7px;
+border-bottom-left-radius:0px;
+border-bottom-right-radius:0px;
+-moz-border-radius:7px; /* Firefox 3.6 and earlier */
+    height: 60px;
+    margin-right: 5px;
+    padding-left: 10px;
+    padding-right: 5px;
+    padding-top: 10px;
+    width: 110px;
+		text-decoration:none;
+}
+
+#topmenu3 a:hover
+{
+	text-decoration:underline;
+}
+
+/*menu item 4 */
+#topmenu4 a
+{
+text-decoration:none;
+color:#121212;
+float:left;
+    height: 60px;
+    margin-right: 5px;
+    padding-left: 10px;
+    padding-right: 5px;
+    padding-top: 10px;
+    width: 110px;
+}
+
+#topmenu4 a:hover
+{
+	text-decoration:underline;
+}
+
+
+#block-block-6 a, #block-block-29 a
+{	
+font-size:10px;
+line-height:11px;
+}
+
+
+/**********************************************new styles for top menu donate button */
+
+#block-block-6 a, #block-block-29 a {
+    margin-left: 4px;
+}
+#topmenu5 a {
+	background: #cc0000; /* for non-css3 browsers */
+ /*   background: -moz-linear-gradient(center top , #CC0000, #CC0000) repeat scroll 0 0 transparent;
+    border-left: 1px solid #CC0000;
+    border-radius: 7px 7px 0 0;
+    border-right: 1px solid #CC0000;
+    border-top: 1px solid #CC0000;*/
+    color: #FFFFFF;
+    float: left;
+    height: 62px;
+    margin-right: 0px;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 10px;
+    text-decoration: none;
+    width: 95px;
+    font-size: 20px;
+    line-height: 23px;
+	text-align: center;
+}
+
+/*********************************************** endnew styles for top menu donate button */
+
+
+/* content */
+
+
+#section-content {
+    margin-top: -6px;
+	}
+
+
+
+
+
+/*first footer */
+
+
+.region-footer-first-inner ul {margin: 0; padding: 0; list-style-type: none; text-align: center;}
+.region-footer-first-inner ul li {
+    display: inline;
+    float: left;
+    text-align: left;
+    width: 170px;
+}
+.region-footer-first-inner ul li a {font-size:16px; font-weight:bold;}
+.region-footer-first-inner ul li li a{font-size:11px; font-weight:normal;}
+.region-footer-first-inner  a
+{
+color:#FFFFFF; text-decoration: none;
+}
+.region-footer-first-inner  a:hover {
+	text-decoration:underline;
+	}
+
+/*second footer */
+.region-footer-second-inner p {color:#000000;padding-bottom:5px; padding-top:5px; margin-bottom:0;}
+.region-footer-second-inner a {text-decoration:none; font-weight:bold; color:#424242;}
+.region-footer-second-inner a:hover {text-decoration:underline;}
+
+
+/*main content */
+#section-content {background-color:#ffffff; border-top:solid 5px #cc0000;}
+
+
+/*overwriting nice menu css code with nasty image based background because of rediculous nature of Chrome and IE which seem incapable of coping with curvey corners */
+
+#topmenu1 a {
+background-image: url("images/orange.png");
+background-repeat: no-repeat;
+border: none;
+height: 61px;
+width: 125px;
+}
+
+#topmenu2 a {
+background-image: url("images/green.png");
+background-repeat: no-repeat;
+border: none;
+height: 61px;
+width: 125px;
+}
+
+#topmenu3 a {
+background-image: url("images/yellow.png");
+background-repeat: no-repeat;
+border: none;
+height: 61px;
+width: 125px;
+}
+
+#topmenu4 a {
+background-image: url("images/blue.png");
+background-repeat: no-repeat;
+border: none;
+height: 61px;
+width: 125px;
+}
+
+#block-block-6 ul, #block-block-29 ul
+{
+padding:0px;
+}
+
+#region-content .view-id-province_list .item-list h3 {
+    background-image: url("/sites/all/themes/viva/css/images/title-banner.gif");
+    background-repeat: no-repeat;
+    color: #ffffff;
+    font-family: verdana,arial,sans-serif;
+    height: 51px;
+    margin-left: -10px;
+    margin-top: 10px;
+    padding-left: 10px;
+    padding-top: 7px;
+    width: 254px;
+}
+
+.view-id-province_list .item-list {
+    float: left;
+    margin: 20px 0;
+    padding-right: 20px;
+    width: 280px;
+}
+
+.block-block-60 {
+float:left; clear:left;
+margin:20px 0 20px 0;
+width: 960px;
+}

@@ -1,0 +1,527 @@
+# Use PHP54.4 as default
+
+AddHandler application/x-httpd-php54 .php
+
+#
+
+# Apache/PHP/Drupal settings:
+
+#
+
+
+
+# Protect files and directories from prying eyes.
+
+<FilesMatch "\.(engine|inc|info|install|make|module|profile|test|po|sh|.*sql|theme|tpl(\.php)?|xtmpl)(~|\.sw[op]|\.bak|\.orig|\.save)?$|^(\..*|Entries.*|Repository|Root|Tag|Template)$|^#.*#$|\.php(~|\.sw[op]|\.bak|\.orig\.save)$">
+
+  Order allow,deny
+
+</FilesMatch>
+
+
+
+# Don't show directory listings for URLs which map to a directory.
+
+Options -Indexes
+
+
+
+# Follow symbolic links in this directory.
+
+# For security reasons, Option followsymlinks cannot be overridden.
+
+#Options +FollowSymLinks
+
+Options +SymLinksIfOwnerMatch
+
+
+
+# Make Drupal handle any 404 errors.
+
+ErrorDocument 404 /index.php
+
+
+
+# Set the default handler.
+
+DirectoryIndex index.php index.html index.htm
+
+
+
+# Override PHP settings that cannot be changed at runtime. See
+
+# sites/default/default.settings.php and drupal_environment_initialize() in
+
+# includes/bootstrap.inc for settings that can be changed at runtime.
+
+
+
+# PHP 5, Apache 1 and 2.
+
+<IfModule mod_php5.c>
+
+  php_flag magic_quotes_gpc                 off
+
+  php_flag magic_quotes_sybase              off
+
+  php_flag register_globals                 off
+
+  php_flag session.auto_start               off
+
+# File modified on Mon Sep 30 07:55:49 2013 by server
+
+# For security reasons, mod_php is not used on this server. Use a php.ini file for php directives
+
+#   php_value mbstring.http_input             pass
+
+# For security reasons, mod_php is not used on this server. Use a php.ini file for php directives
+
+#   php_value mbstring.http_output            pass
+
+  php_flag mbstring.encoding_translation    off
+
+php_value max_execution_time 259200
+
+</IfModule>
+
+
+
+# Requires mod_expires to be enabled.
+
+<IfModule mod_expires.c>
+
+  # Enable expirations.
+
+  ExpiresActive On
+
+
+
+  # Cache all files for 2 weeks after access (A).
+
+  ExpiresDefault A1209600
+
+
+
+  <FilesMatch \.php$>
+
+    # Do not allow PHP scripts to be cached unless they explicitly send cache
+
+    # headers themselves. Otherwise all scripts would have to overwrite the
+
+    # headers set by mod_expires if they want another caching behavior. This may
+
+    # fail if an error occurs early in the bootstrap process, and it may cause
+
+    # problems if a non-Drupal PHP file is installed in a subdirectory.
+
+    ExpiresActive Off
+
+  </FilesMatch>
+
+</IfModule>
+
+
+
+# Various rewrite rules.
+
+<IfModule mod_rewrite.c>
+
+  RewriteEngine on
+
+
+
+  # Set "protossl" to "s" if we were accessed via https://.  This is used later
+
+  # if you enable "www." stripping or enforcement, in order to ensure that
+
+  # you don't bounce between http and https.
+
+  RewriteRule ^ - [E=protossl]
+
+  RewriteCond %{HTTPS} on
+
+  RewriteRule ^ - [E=protossl:s]
+
+
+
+  # Make sure Authorization HTTP header is available to PHP
+
+  # even when running as CGI or FastCGI.
+
+  RewriteRule ^ - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+
+
+  # Block access to "hidden" directories whose names begin with a period. This
+
+  # includes directories used by version control systems such as Subversion or
+
+  # Git to store control files. Files whose names begin with a period, as well
+
+  # as the control files used by CVS, are protected by the FilesMatch directive
+
+  # above.
+
+  #
+
+  # NOTE: This only works when mod_rewrite is loaded. Without mod_rewrite, it is
+
+  # not possible to block access to entire directories from .htaccess, because
+
+  # <DirectoryMatch> is not allowed here.
+
+  #
+
+  # If you do not have mod_rewrite installed, you should remove these
+
+  # directories from your webroot or otherwise protect them from being
+
+  # downloaded.
+
+  RewriteRule "(^|/)\." - [F]
+
+
+
+  # If your site can be accessed both with and without the 'www.' prefix, you
+
+  # can use one of the following settings to redirect users to your preferred
+
+  # URL, either WITH or WITHOUT the 'www.' prefix. Choose ONLY one option:
+
+  #
+
+  # To redirect all users to access the site WITH the 'www.' prefix,
+
+  # (http://example.com/... will be redirected to http://www.example.com/...)
+
+  # uncomment the following:
+
+  RewriteCond %{HTTP_HOST} .
+
+  RewriteCond %{HTTP_HOST} !^www\. [NC]
+
+  RewriteRule ^ http%{ENV:protossl}://www.%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+  #
+
+  # To redirect all users to access the site WITHOUT the 'www.' prefix,
+
+  # (http://www.example.com/... will be redirected to http://example.com/...)
+
+  # uncomment the following:
+
+  # RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
+
+  # RewriteRule ^ http%{ENV:protossl}://%1%{REQUEST_URI} [L,R=301]
+
+
+
+  # Modify the RewriteBase if you are using Drupal in a subdirectory or in a
+
+  # VirtualDocumentRoot and the rewrite rules are not working properly.
+
+  # For example if your site is at http://example.com/drupal uncomment and
+
+  # modify the following line:
+
+  # RewriteBase /viva.org.uk
+
+  #
+
+  # If your site is running in a VirtualDocumentRoot at http://example.com/,
+
+  # uncomment the following line:
+
+  RewriteBase /
+
+
+
+  # Pass all requests not referring directly to files in the filesystem to
+
+  # index.php. Clean URLs are handled in drupal_environment_initialize().
+
+  RewriteCond %{REQUEST_FILENAME} !-f
+
+  RewriteCond %{REQUEST_FILENAME} !-d
+
+  RewriteCond %{REQUEST_URI} !=/favicon.ico
+
+  RewriteRule ^ index.php [L]
+
+
+
+  # Rules to correctly serve gzip compressed CSS and JS files.
+
+  # Requires both mod_rewrite and mod_headers to be enabled.
+
+  <IfModule mod_headers.c>
+
+    # Serve gzip compressed CSS files if they exist and the client accepts gzip.
+
+    RewriteCond %{HTTP:Accept-encoding} gzip
+
+    RewriteCond %{REQUEST_FILENAME}\.gz -s
+
+    RewriteRule ^(.*)\.css $1\.css\.gz [QSA]
+
+
+
+    # Serve gzip compressed JS files if they exist and the client accepts gzip.
+
+    RewriteCond %{HTTP:Accept-encoding} gzip
+
+    RewriteCond %{REQUEST_FILENAME}\.gz -s
+
+    RewriteRule ^(.*)\.js $1\.js\.gz [QSA]
+
+
+
+    # Serve correct content types, and prevent mod_deflate double gzip.
+
+    RewriteRule \.css\.gz$ - [T=text/css,E=no-gzip:1]
+
+    RewriteRule \.js\.gz$ - [T=text/javascript,E=no-gzip:1]
+
+
+
+    <FilesMatch "(\.js\.gz|\.css\.gz)$">
+
+      # Serve correct encoding type.
+
+      Header set Content-Encoding gzip
+
+      # Force proxies to cache gzipped & non-gzipped css/js files separately.
+
+      Header append Vary Accept-Encoding
+
+    </FilesMatch>
+
+  </IfModule>
+
+</IfModule>
+
+
+
+
+
+Redirect /cruelbritannia http://www.viva.org.uk/what-we-do/cruel-britannia-life-and-death-uk-factory-farms
+
+Redirect /guides/feedtheworld.htm http://www.viva.org.uk/resources/campaign-materials/guides/feed-world
+
+Redirect /foiegras http://www.viva.org.uk/what-we-do/foie-gras-free-britain
+
+Redirect /amazon http://www.viva.org.uk/what-we-do/foie-gras-free-britain/online-cruelty
+
+Redirect /supporter/membershipform.php http://www.viva.org.uk/donate/join
+
+Redirect /supporter/membershipform.htm http://www.viva.org.uk/donate/join
+
+
+
+Redirect /get-involved/raise-money/terms http://www.viva.org.uk/get-involved/raise-money
+
+Redirect /recipes/quick/quick3.html http://veganrecipeclub.org.uk/vegetarian-recipe/most-comforting-soup-world
+
+Redirect /campaigns/slaughter/std5.htm http://www.viva.org.uk/sentenced-death
+
+Redirect /campaigner/contacts02.html http://www.viva.org.uk/get-involved/campaigners
+
+
+
+Redirect /wine http://user24933.vs.easily.co.uk/wineshop
+
+Redirect /wineshop http://user24933.vs.easily.co.uk/wineshop
+
+Redirect /voicesforanimals http://www.viva.org.uk/bigbandaid
+
+Redirect /ebay http://www.viva.org.uk/what-we-do/foie-gras-free-britain/ebay-dont-auction-cruelty
+
+Redirect /health http://www.vivahealth.org.uk
+
+Redirect /badgers http://www.viva.org.uk/what-we-do/our-work/badgers
+
+
+
+Redirect /FB54 http://www.viva.org.uk/session_redirect?Lead=FB54&URL=http%3A%2F%2Fwww.viva.org.uk%2Febay
+
+Redirect /pdfs/StandingOrder.pdf http://www.viva.org.uk/join
+
+Redirect /lobsters http://www.viva.org.uk/what-we-do/our-work/lobsters
+
+Redirect /eggs http://www.viva.org.uk/what-we-do/cracked-campaign
+
+Redirect /roadshow http://www.viva.org.uk/resources/classified/events/roadshows
+
+Redirect /gloucester http://www.viva.org.uk/resources/classified/events/roadshows
+
+Redirect /banfoiegras http://www.viva.org.uk/what-we-do/foie-gras-free-britain/make-britain-foie-gras-free-sign-petition
+
+Redirect /nikon http://www.viva.org.uk/what-we-do/never-nikon
+
+Redirect /lambinglies http://www.viva.org.uk/what-we-do/lambing-lies
+
+
+Redirect /campaigns/ducks http://www.viva.org.uk/what-we-do/our-work/ducks
+
+Redirect /diabetes http://www.vegetarian.org.uk/campaigns/diabetes/
+
+Redirect /turtles http://www.viva.org.uk/what-we-do/our-work/turtles
+
+Redirect /facebook https://www.facebook.com/vegans.vegetarians.for.animals
+
+Redirect /goingveggie/howtogoveggie/whatisaveggie.htm http://www.viva.org.uk/going-vegetarian-vegan/going-veggie/how
+Redirect /recipes/international/weaning01.html http://www.vegetarian.org.uk/guides/motherandbaby/weaning-foods.html
+Redirect /aboutus/juliet.html http://www.viva.org.uk/staff
+Redirect /recipes/quick/weaning01.html http://www.vegetarian.org.uk/guides/motherandbaby/weaning-foods.html
+Redirect /recipes/martinguide.htm http://www.viva.org.uk/martin-shaw-cooks-veggie
+Redirect /celebs/index.html http://www.viva.org.uk/what-we-do/celebrity-supporters 
+Redirect /supporter/renewalform.htm http://www.viva.org.uk/renew 
+Redirect /christmas/index.html http://www.viva.org.uk/resources/campaign-materials/guides/veggie-christmas
+Redirect /campaigns/chickens/cracked.html http://www.viva.org.uk/what-we-do/cracked-campaign
+Redirect /mediareleases/display.php?articlepid=243 http://www.viva.org.uk/what-we-do/about-us/media-centre/media-releases/celebrate-pancake-day-difference
+Redirect /campaigns/foiegras/2012appeal.php?source=131-FB-PR http://www.viva.org.uk/what-we-do/foie-gras-free-britain
+Redirect /mediareleases/display.php?articlepid=289 http://www.viva.org.uk/what-we-do/about-us/media-centre/media-releases/kids-are-not-alright-british-goat-farms-exposed
+Redirect /campaigns/ritual_slaughter/goingforthekill3.htm http://www.viva.org.uk/what-we-do/our-work/religious-slaughter
+Redirect /books/ark/intro.html http://www.viva.org.uk/silent-ark/introduction
+Redirect /books/ark/ch1.html http://www.viva.org.uk/silent-ark/1-through-eyes-pig 
+Redirect /books/ark/ch2.html http://www.viva.org.uk/silent-ark/2-chicken-and-egg
+Redirect /books/ark/ch3.html http://www.viva.org.uk/silent-ark/3-six-week-lifecycle
+Redirect /books/ark/ch4.html http://www.viva.org.uk/silent-ark/4-end-line
+Redirect /books/ark/ch5.html http://www.viva.org.uk/silent-ark/5-science-sadism-and-salvation
+Redirect /books/ark/ch6.html http://www.viva.org.uk/silent-ark/6-milky-bar-kidology
+Redirect /books/ark/ch7.html http://www.viva.org.uk/silent-ark-introduction/7-tale-sea
+Redirect /books/ark/ch8.html http://www.viva.org.uk/silent-ark/8-not-so-free-range
+Redirect /books/ark/ch9.html http://www.viva.org.uk/silent-ark/9-transports-despair
+Redirect /books/ark/ch10.html http://www.viva.org.uk/silent-ark/10-meat-die
+Redirect /books/ark/ch11.html http://www.viva.org.uk/silent-ark/11-apple-day
+Redirect /books/ark/ch12.html http://www.viva.org.uk/silent-ark/12-aping-past
+Redirect /books/ark/ch13.html http://www.viva.org.uk/silent-ark/13-developed-death
+Redirect /books/ark/ch14.html http://www.viva.org.uk/silent-ark/14-matter-environment
+Redirect /books/ark/ch15.html http://www.viva.org.uk/silent-ark/15-political-persuasion
+Redirect /books/ark/ch16.html http://www.viva.org.uk/silent-ark/16-end-nigh
+Redirect /books/ark/biblio.html http://www.viva.org.uk/silent-ark/bibliography
+Redirect /vivashop/post.php http://www.vivashop.org.uk/viva/delivery-information
+Redirect /goingveggie/whygoveggie/index.htm http://www.viva.org.uk/going-vegetarian-vegan/going-veggie/reasons-why
+Redirect /goingvegan/index.php http://www.viva.org.uk/going-vegetarian-vegan/going-vegan
+Redirect /photogallery/SlaughterIndex.htm http://www.viva.org.uk/photo-galleries/slaughter-photos
+Redirect /campaigns/turkeys/index.htm http://www.viva.org.uk/what-we-do/our-work/turkeys
+Redirect /campaigns/badgers/index3.php http://www.viva.org.uk/what-we-do/our-work/badgers
+Redirect /what-we-do/green-your-life/terms http://www.viva.org.uk/what-we-do/green-your-life/welcome-green-your-life
+Redirect /guides/martinguide.htm http://www.viva.org.uk/resources/campaign-materials/guides/martin-shaw-cooks-veggie
+Redirect /hamishanddougal/william-happy-ending.php http://www.viva.org.uk/what-we-do/hamish-and-dougal
+Redirect /viva.org.uk/contact /viva.org.uk/contact
+Redirect /campaigns/chickens/day-of-action.html http://www.viva.org.uk/what-we-do/cracked-campaign
+Redirect /index.html http://www.viva.org.uk/
+Redirect /recipes/youth.html http://vegetarianrecipeclub.org.uk/recipe-search/results/taxonomy%3A362
+Redirect /campaigns/live-export/index.htm http://www.viva.org.uk/what-we-do/our-work/live-exports
+Redirect /campaigns/foiegras/history.html http://www.viva.org.uk/what-we-do/foie-gras-free-britain/foie-gras-campaign-history
+Redirect /guides/geneticengineering.htm http://www.viva.org.uk/resources/campaign-materials/guides/genetic-engineering
+Redirect /recipes/glossary.html http://vegetarianrecipeclub.org.uk/node/474
+Redirect /goingveggie/whygoveggie/animalwelfare1.htm http://www.viva.org.uk/going-vegetarian-vegan/going-veggie/reasons-why/animal-welfare
+Redirect /dishing-dirt-part-two-lives-farmed-animals/terms /dishing-dirt-part-two-lives-farmed-animals/terms
+Redirect /campaigns/mega-dairy/template.html http://viva.org.uk/what-we-do/nocton-dairies
+Redirect /exodus/exodus2011.html http://www.viva.org.uk/get-involved/raise-money/team-viva
+Redirect /guides/lakesguide/index.html http://www.viva.org.uk/resources/campaign-materials/guides/vegetarian-guide-lake-district-2012-2013
+Redirect /mediareleases/display.php?articlepid=233 http://www.viva.org.uk/what-we-do/about-us/media-centre/media-releases/badgers-strictly-limits-says-tvs-dancing-star-0
+Redirect /recipes/youth-family.html http://veganrecipeclub.org.uk/
+Redirect /newsletter.html http://www.viva.org.uk/email-newsletter-signup
+Redirect /campaigns/ducks/martin-shaw.php http://www.viva.org.uk/resources/video-library/martin-shaw-and-viva-fight-ducks
+Redirect /resources/reports-research-documents http://www.viva.org.uk/resources/campaign-materials/reports
+Redirect /recipes/quick/quick64.html http://veganrecipeclub.org.uk/vegetarian-recipe/tomato-and-bulgar-soup
+Redirect /recipes/7day/sunday.html http://veganrecipeclub.org.uk/
+Redirect /goingveggie/index.php http://www.viva.org.uk/going-vegetarian-vegan/going-veggie/reasons-why
+Redirect /campaigner/writing-release.html http://www.viva.org.uk/what-we-do/writing-media-release
+Redirect /campaigns/foiegras/2012appeal.html http://www.viva.org.uk/what-we-do/foie-gras-free-britain 
+Redirect /campaigner/contact-media.html http://www.viva.org.uk/what-we-do/contacting-your-local-media
+Redirect /bigbandaid/terms http://www.viva.org.uk/bigbandaid
+Redirect /what-we-do/environment/terms http://www.viva.org.uk/what-we-do/our-work/environment
+Redirect /guides/l-plate/vegetarian/2.html http://www.viva.org.uk/resources/campaign-materials/guides/l-plate-vegetarian 
+Redirect /guides/l-plate/vegetarian/3.html http://www.viva.org.uk/resources/campaign-materials/guides/l-plate-vegetarian
+Redirect /guides/l-plate/vegetarian/4.html http://www.viva.org.uk/resources/campaign-materials/guides/l-plate-vegetarian
+Redirect /guides/l-plate/vegetarian/5.html http://www.viva.org.uk/resources/campaign-materials/guides/l-plate-vegetarian
+Redirect /guides/l-plate/vegetarian/6.html http://www.viva.org.uk/resources/campaign-materials/guides/l-plate-vegetarian
+Redirect /guides/l-plate/vegetarian/7.html http://www.viva.org.uk/resources/campaign-materials/guides/l-plate-vegetarian
+Redirect /guides/l-plate/vegetarian/8.html http://www.viva.org.uk/resources/campaign-materials/guides/l-plate-vegetarian
+Redirect /guides/l-plate/vegetarian/9.html http://www.viva.org.uk/resources/campaign-materials/guides/l-plate-vegetarian
+Redirect /guides/l-plate/vegetarian/10.html http://www.viva.org.uk/resources/campaign-materials/guides/l-plate-vegetarian
+Redirect /guides/l-plate/vegetarian/11.html http://www.viva.org.uk/resources/campaign-materials/guides/l-plate-vegetarian
+Redirect /guides/l-plate/vegetarian/12.html http://www.viva.org.uk/resources/campaign-materials/guides/l-plate-vegetarian
+Redirect /guides/l-plate/vegetarian/13.html http://www.viva.org.uk/resources/campaign-materials/guides/l-plate-vegetarian
+Redirect /guides/l-plate/vegetarian/14.html http://www.viva.org.uk/resources/campaign-materials/guides/l-plate-vegetarian
+Redirect /guides/l-plate/vegetarian/15.html http://www.viva.org.uk/resources/campaign-materials/guides/l-plate-vegetarian
+Redirect /recipes/quick/quick6.html http://veganrecipeclub.org.uk/vegetarian-recipe/tabbouleh-middle-eastern-salad
+Redirect /what-we-do/about-us/media-centre/terms http://www.viva.org.uk/what-we-do/about-us/media-centre
+Redirect /guides/feedtheworld2.htm http://www.viva.org.uk/resources/campaign-materials/guides/feed-world
+Redirect /guides/animals/index.html http://www.viva.org.uk/resources/campaign-materials/guides/matter-life-and-death
+Redirect /resources/classified/events/terms http://www.viva.org.uk/resources/classified/events
+Redirect /photogallery/Horses/th6.htm http://www.viva.org.uk/topic/horses
+Redirect /photogallery/Horses/3.htm http://www.viva.org.uk/topic/horses
+Redirect /campaigns/foiegras/factsheet.html http://www.viva.org.uk/resources/campaign-materials/fact-sheets/torture-tin-viva-foie-gras-fact-sheet
+Redirect /campaigns/foiegras/ http://www.viva.org.uk/what-we-do/foie-gras-free-britain
+Redirect /recipes http://vegetarianrecipeclub.org.uk/
+Redirect /hamishanddougal/william.php http://www.viva.org.uk/what-we-do/hamish-and-dougal
+Redirect /donatemobile/ http://www.viva.org.uk/mobile-recycling
+Redirect /guides/lakesguide/stay.html http://www.viva.org.uk/resources/campaign-materials/guides/vegetarian-guide-lake-district-2012-2013
+Redirect /goingveggie http://www.viva.org.uk/going-vegetarian-vegan/going-veggie
+
+Redirect /recipes/quick/quick2.html http://veganrecipeclub.org.uk/vegetarian-vegan-recipe/coconutty-sweetcorn-red-pepper-creamy-fragrant-vegan-easy-soup
+Redirect /guides/notesonnuts.html http://www.vegetarian.org.uk/guides/motherandbaby/pre-post-pregnancy-nutrition.html#nuts
+Redirect /guides/lakesguide/eat.html http://www.viva.org.uk/resources/campaign-materials/guides/vegetarian-guide-lake-district-2012-2013
+Redirect /celebs/sj_interview.html http://www.viva.org.uk/what-we-do/celebrity-supporters/sarah-jane-honeywell/young-gifted-and-veggie
+Redirect /what-we-do/celebrity-supporters/terms http://www.viva.org.uk/what-we-do/celebrity-supporters
+Redirect /campaigns/horses/horsereport1.htm http://www.viva.org.uk/resources/campaign-materials/reports/journey-death
+Redirect /recipes/wine/wine35.html http://veganrecipeclub.org.uk/vegetarian-recipe/oven-baked-sweet-potato-and-red-pepper-soup
+Redirect /campaigns/pigs/tesco_investig.html http://www.viva.org.uk/what-we-do/latest-updates/tesco-exposed-norfolk
+Redirect /stars-swing-viva http://www.viva.org.uk/bigbandaid
+Redirect /guides/lakesguide/healthfood.html http://www.viva.org.uk/resources/campaign-materials/guides/vegetarian-guide-lake-district-2012-2013
+Redirect /resources/photos/unborn-animals/terms http://www.viva.org.uk/photo-galleries/unborn-animals
+Redirect /resources/campaign-materials/reports/terms http://www.viva.org.uk/resources/campaign-materials/reports
+Redirect /greenyourlife/boxclever.html http://www.viva.org.uk/what-we-do/environment/boxing-clever
+Redirect /talks/index.html http://www.viva.org.uk/resources/video-library
+Redirect /campaigns/badgers http://www.viva.org.uk/what-we-do/our-work/badgers
+Redirect /mediareleases/display.php?articlepid=207 http://www.viva.org.uk/what-we-do/about-us/media-centre/media-releases/truro-school-urged-take-skippy-menu
+Redirect /campaigns/foiegras/donate.php http://www.viva.org.uk/what-we-do/foie-gras-free-britain/get-active-make-britain-foie-gras-free
+Redirect /campaigns/horses/horsereport.htm http://www.viva.org.uk/journey-death
+Redirect /campaigns/horses/horsereport1.htm http://www.viva.org.uk/journey-death
+Redirect /campaigns/horses/horsereport2.htm http://www.viva.org.uk/journey-death
+Redirect /campaigns/horses/horsereport3.htm http://www.viva.org.uk/journey-death
+Redirect /campaigns/horses/horsereport-appa.htm http://www.viva.org.uk/journey-death  
+Redirect /campaigns/horses/horsereportrefs.htm http://www.viva.org.uk/journey-death
+Redirect /guides/lakesguide/Lake-District-guide-11-12.pdf http://www.viva.org.uk/resources/campaign-materials/guides/vegetarian-guide-lake-district-2012-2013
+Redirect /mediareleases/pr2004/04-06ritual.htm http://www.viva.org.uk/what-we-do/about-us/media-centre/media-releases/government-urged-ban-religious-slaughter
+Redirect /video/events.html http://www.viva.org.uk/resources/video-library
+Redirect /resources/campaign-materials/fact-sheets/terms http://www.viva.org.uk/resources/campaign-materials/fact-sheets
+Redirect /books/dr-greger-latest-clinical-nutrition-2007-dvd http://www.viva.org.uk/resources/campaign-materials/media-and-dvds
+Redirect /resources/vivalife-magazine http://www.viva.org.uk/resources/vivalife
+
+Redirect /recipes/international/international91.html http://veganrecipeclub.org.uk/vegetarian-recipe/creamy-leek-mushroom-pasta
+Redirect /recipes/health/health25.html http://veganrecipeclub.org.uk/vegetarian-vegan-recipe/italian-tomato-basil-dressing
+Redirect /mediareleases/pr2004/04-17%20Dirty%20Meat%20Report.htm http://www.viva.org.uk/what-we-do/about-us/media-centre/media-releases/new-report-highlights-risks-dirty-turkey-christmas
+Redirect /pdfs/dirty-meat-report.pdf http://viva.org.uk/resources/campaign-materials/reports/dishing-dirt
+Redirect /goingveggie/whygoveggie/animalwelfare2.htm http://www.viva.org.uk/going-vegetarian-vegan/going-veggie/reasons-why/animal-welfare
+Redirect /campaigns/horses/briefing.htm http://www.viva.org.uk/what-we-do/horses/vivas-briefing-polish-horse-exports
+Redirect /resources/terms http://www.viva.org.uk/resources
+Redirect /resources/photos/freedom-food-turkeys/terms http://www.viva.org.uk/photo-galleries/freedom-food-turkeys
+Redirect /recipes/quick/quick24.html http://veganrecipeclub.org.uk/vegetarian-vegan-recipe/butter-bean-red-pepper-and-basil-spread
+Redirect /campaigns/horses/horsereport.htm http://www.viva.org.uk/resources/campaign-materials/reports/journey-death
+Redirect /eatingout/display.php?county=East%20Sussex http://www.viva.org.uk/resources/classified
+Redirect /recipes/health/health21.html http://veganrecipeclub.org.uk/vegetarian-recipe/mexican-black-bean-soup-tomato-salsa
+Redirect /resources/photos/badger-demos/terms http://www.viva.org.uk/photo-galleries/badger-demos
+Redirect /eatingout/display.php?county=Gloucestershire http://www.viva.org.uk/resources/classified
+Redirect /recipes/youthwots/youthwots116.html http://veganrecipeclub.org.uk/vegetarian-vegan-recipe/basic-tomato-sauce-infinite-options
+Redirect /recipes http://vegetarianrecipeclub.org.uk
+Redirect /goingveggie/whygoveggie/animalwelfare5.htm http://www.viva.org.uk/going-vegetarian-vegan/going-veggie/reasons-why/animal-welfare
+Redirect /mediareleases/pr2004/04-13bradshaw.htm http://www.viva.org.uk/what-we-do/about-us/media-centre/media-releases/useless-ben-bradshaw-asked-repay-his-ministers
+Redirect /goingveggie/whygoveggie/animalwelfare7.htm http://www.viva.org.uk/going-vegetarian-vegan/going-veggie/reasons-why/animal-welfare
+Redirect /mediareleases/pr2004/04-24awards.htm http://www.viva.org.uk/what-we-do/about-us/media-centre/media-releases/viva%E2%80%99s-awards-veggie-innovation
+Redirect /eatingout/display.php?county=Zurich http://www.viva.org.uk/resources/classified
+Redirect /goingveggie/whygoveggie/health3.htm http://www.viva.org.uk/going-vegetarian-vegan/going-veggie/reasons-why/health
+Redirect /mediareleases/display.php?articlepid=211 http://www.viva.org.uk/what-we-do/about-us/media-centre/media-releases/parties-unite-opposition-against-mass-dairy-farm
+Redirect /campaigns/foiegras/council.html http://www.viva.org.uk/what-we-do/foie-gras-free-britain/contact-your-local-councillor
+Redirect /campaigns/turtle/ordermaterials.html http://www.viva.org.uk/form/free-tesco-turtles
+Redirect /recipes/international/international104.html http://veganrecipeclub.org.uk/vegetarian-recipe/mango-and-sticky-rice
+Redirect /resources/photos/slaughter-photos/terms http://www.viva.org.uk/photo-galleries/slaughter-photos
+Redirect /get-involved/raise-money/terms http://www.viva.org.uk/get-involved/raise-money
+Redirect /recipes/quick/quick3.html http://veganrecipeclub.org.uk/vegetarian-recipe/most-comforting-soup-world
+Redirect /campaigns/slaughter/std5.htm http://www.viva.org.uk/sentenced-death
+Redirect /campaigner/contacts02.html http://www.viva.org.uk/get-involved/campaigners

@@ -1,0 +1,10 @@
+.bodytxt {  font-family: Verdana, Arial, Helvetica, sans-serif; font-size: x-small; color: #000000; text-decoration: none}
+.menutxt {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: xx-small;
+	font-weight: bold;
+	color: #000000;
+}
+a:link {  text-decoration: underline}
+a:hover {  color: #FFFFFF}
+.headline {  font-family: Verdana, Arial, Helvetica, sans-serif; font-size: x-small; font-weight: bold; color: #CC0033; letter-spacing: 2px; text-decoration: none}

@@ -1,0 +1,88 @@
+@charset "UTF-8";
+body {
+    background-attachment: fixed;
+    background-color: #71090a;
+    background-image: url("/christmas/images/swirl.jpg");
+    background-repeat: no-repeat;
+    margin: 5em 0 0;
+    padding: 10px 0;
+	
+	}
+body, tr{
+font-family:Arial, Helvetica, sans-serif;
+font-size:14px
+}
+.smalltext{
+font-size:12px
+}
+h1, h2, h3 {
+	color: #cc0000;
+	font-family: Helvetica, Arial, sans-serif;
+}
+h1 {
+font-size:20px;
+}
+h2 {
+font-size:16px;
+}
+h3 {
+font-size:14px;
+}
+.content {
+	border-right-width: 8px;
+	border-left-width: 8px;
+	border-right-style: solid;
+	border-left-style: solid;
+	border-right-color: #cc0000;
+	border-left-color: #cc0000;
+	background-color: #FFFFFF;
+	padding-right: 18px;
+	padding-left: 18px;
+}
+a:link {
+	color: #1b6502;
+	text-decoration: none;
+	font-weight:bold;
+}
+a:visited {
+	color: #1b6502;
+	text-decoration: none;
+	font-weight:bold;
+}
+a:hover {
+	color: #cc0000;
+	text-decoration: underline;
+	font-weight:bold;
+}
+a:active {
+	color: #1b6502;
+	text-decoration: none;
+	font-weight:bold;
+}
+.floatl {
+	float: left;
+	margin: 0px 1em 5px 0px;
+}
+
+.floatr {
+	float: right;
+	margin: 0px 0px 5px 1em;
+}
+
+.captionfloatr {
+	float: right;
+	margin: 0px 0px 5px 1em;
+	font: bold italic 12px Arial, Geneva, Helvetica, sans-serif;
+}
+.captionfloatl {
+	float: left;
+	margin: 0px 1em 5px 0px;
+	font: bold italic 12px Arial, Geneva, Helvetica, sans-serif;
+}
+
+.menu a:link {
+font-family:Georgia, "Times New Roman", Times, serif;
+color:#00000;
+font-weight:normal;
+font-size:12pt;
+}
